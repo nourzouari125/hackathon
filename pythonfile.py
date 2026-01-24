@@ -508,7 +508,7 @@ products_database = [
     {
         "id": 29,
         "name": "AirPods Pro 2",
-        "category": "earbuds",
+        "category": "earbuds", 
         "brand": "Apple",
         "price": 279,
         "currency": "EUR",
@@ -632,74 +632,3 @@ def save_database():
     with open('finmatch_products.json', 'w', encoding='utf-8') as f:
         json.dump(products_database, f, ensure_ascii=False, indent=2)
     print(f"✅ Base de données sauvegardée: {len(products_database)} produits")
-
-# Fonctions utiles pour manipuler la base de données
-def get_products_by_category(category):
-    """Récupérer tous les produits d'une catégorie"""
-    return [p for p in products_database if p['category'] == category]
-
-def get_products_by_price_range(min_price, max_price):
-    """Récupérer les produits dans une fourchette de prix"""
-    return [p for p in products_database if min_price <= p['price'] <= max_price]
-
-def get_products_by_brand(brand):
-    """Récupérer tous les produits d'une marque"""
-    return [p for p in products_database if p['brand'].lower() == brand.lower()]
-
-def search_products(keyword):
-    """Rechercher des produits par mot-clé dans le nom ou la description"""
-    keyword = keyword.lower()
-    return [p for p in products_database if 
-            keyword in p['name'].lower() or 
-            keyword in p['description'].lower()]
-
-# Statistiques de la base de données
-def show_database_stats():
-    """Afficher les statistiques de la base de données"""
-    print("="*50)
-    print("📊 STATISTIQUES BASE DE DONNÉES FINMATCH")
-    print("="*50)
-    
-    total = len(products_database)
-    print(f"\n📦 Total produits: {total}")
-    
-    # Par catégorie
-    categories = {}
-    for p in products_database:
-        cat = p['category']
-        categories[cat] = categories.get(cat, 0) + 1
-    
-    print("\n📂 Par catégorie:")
-    for cat, count in categories.items():
-        print(f"  • {cat}: {count} produits")
-    
-    # Par marque
-    brands = {}
-    for p in products_database:
-        brand = p['brand']
-        brands[brand] = brands.get(brand, 0) + 1
-    
-    print(f"\n🏷️  Nombre de marques: {len(brands)}")
-    print("  Top 5 marques:")
-    sorted_brands = sorted(brands.items(), key=lambda x: x[1], reverse=True)[:5]
-    for brand, count in sorted_brands:
-        print(f"  • {brand}: {count} produits")
-    
-    # Prix
-    prices = [p['price'] for p in products_database]
-    print(f"\n💰 Fourchette de prix:")
-    print(f"  • Minimum: {min(prices)}€")
-    print(f"  • Maximum: {max(prices)}€")
-    print(f"  • Moyenne: {sum(prices)//len(prices)}€")
-    
-    print("="*50)
-
-# Exécuter au lancement
-if __name__ == "__main__":
-    save_database()
-    show_database_stats()
-    
-    print("\n🔍 Exemples de requêtes:")
-    print(f"  • Laptops gaming: {len([p for p in products_database if 'gaming' in p['description'].lower() and p['category']=='laptop'])} produits")
-    print(f"  • Budget ≤ 500€: {len(get_products_by_price_range(0, 500))} produits")
-    print(f"  • Produits Apple: {len(get_products_by_brand('Apple'))} produits")
