@@ -631,4 +631,4 @@ def save_database():
     """Sauvegarder la base de données en fichier JSON"""
     with open('finmatch_products.json', 'w', encoding='utf-8') as f:
         json.dump(products_database, f, ensure_ascii=False, indent=2)
-    print(f"✅ Base de données sauvegardée: {len(products_database)} produits")
+    print(f" Base de données sauvegardée: {len(products_database)} produits")
