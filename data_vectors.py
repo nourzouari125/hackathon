@@ -1,11 +1,11 @@
-from products_database import products
+from products_database import products_database
 from chunker import chunkie
-from embedding import embed
+import embedding 
 from qdrant_db import client
 
 point_id = 0
 
-for product in products:
+for product in products_database:
     text = f"""
     Name: {product['name']}
     Brand: {product['brand']}
@@ -17,7 +17,7 @@ for product in products:
     chunks = chunkie(text)
 
     for chunk in chunks:
-        vector = embed(chunk)
+        vector = embedding.txtVector(chunk)
 
         client.upsert(
             collection_name="products",
