@@ -1,7 +1,4 @@
-import json
-
-# Base de données de 50 produits pour FinMatch
-products_database = [
+ products_database = [
     # ===== LAPTOPS (20 produits) =====
     {
         "id": 1,
@@ -625,10 +622,3 @@ products_database = [
         "payment_options": ["1x", "3x"]
     }
 ]
-
-# Sauvegarder en fichier JSON
-def save_database():
-    """Sauvegarder la base de données en fichier JSON"""
-    with open('finmatch_products.json', 'w', encoding='utf-8') as f:
-        json.dump(products_database, f, ensure_ascii=False, indent=2)
-    print(f" Base de données sauvegardée: {len(products_database)} produits")
