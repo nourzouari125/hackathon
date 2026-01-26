@@ -1,7 +1,8 @@
 from qdrant_client import QdrantClient
-import FasterTextEmb as f
+
 from pathlib import Path  
 from qdrant_client.models import PointStruct
+import importingData as i
 
 #!!!!!!!!!!!!!!!!!!!!!!!the data to insert should contain "id" "vector" and finally the "infos or payload" !!!!!!!!!!!!!!!
 
@@ -11,50 +12,26 @@ client = QdrantClient(
     api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.gV1YzLbyVuElAfkgKVXRPkNLTZVUzADB_TPa7L29AgI"
 )
 #prepare product**************** (example of a product)
-products = [
-    {
-        "id": 1,
-        "text": "Red running shoes for men",
-        "image": "images/shoes1.jpg",
-        "price": 120,
-        "category": "shoes"
-    },
-    {
-        "id": 2,
-        "text": "Wireless noise cancelling headphones",
-        "image": "images/headphones.jpg",
-        "price": 250,
-        "category": "electronics"
-    }
-]
-
-
-
-
-
-
-
-
-
-
+products =i.read_products("laptops_cleaned_v1.csv")
+print(products)
 
 #insertion*******************
 points=[]
 for p in products:
-    v=f.embed(p["text"]+" "+p["category"])
-
-    v1 = v.squeeze(0).tolist()
-    print(len(v1))
-    
+    v=i.prepareVectore(p)
 
     points.append(
         PointStruct(
-            id=p["id"],
-            vector=v1,
+            id=int(p[0]),
+            vector=v,
             payload={
-                "title": p["text"],
-                "price": p["price"],
-                "category": p["category"]
+                "title":p[2],
+                "price": p[3],
+                "processor": p[5],
+                "graphic card": p[14],
+                "ram": p[8],
+                "os": p[16],
+                "storage": p[13],
             }
         )
     )
