@@ -1,5 +1,4 @@
 
-Amine
 import torch
 from pathlib import Path 
 from transformers import CLIPModel, CLIPProcessor
@@ -106,36 +105,10 @@ if _name__=="__main_":
         x1=x1+x3
         x3=0
 
-     
-    
-    
-    
-    
-    
-
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     q=v1*x1+v2*x2+v3*x3
     q=q/q.norm(dim=1, keepdim=True)
     print(q)
-   
-    
-
-    
-
-    
-
 
     #JUST AN  EMBEDDING IDEA NO INSERTION INTO QDRANT YET JUST INTO NORMAL TXT  FILES TO TEST
