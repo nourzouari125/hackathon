@@ -1,16 +1,7 @@
 from chonkie import TokenChunker
-import products_database  
+#import products_database 
+#une fonction qui transforme une format qlq comme text (exp:json)
 
-def product_to_text(product):
-    """Convertit un produit en texte simple pour tester le chunker."""
-    
-    text = f"{product['name']} - {product['brand']}\n"
-    text += f"Prix: {product['price']} {product['currency']}\n"
-    text += f"{product['description']}\n"
-    text += f"Specs: {product['specs']}\n"
-    text += f"Paiement: {product['payment_options']}"
-    
-    return text
 
 
 def chunkie(text: str):
@@ -22,14 +13,14 @@ def chunkie(text: str):
     return [chunk.text for chunk in chunks]
 
 
-def process_products(products_database):
-    result = {}
+#def process_products(products_database):
+ #   result = {}
     
-    for product in products_database:
-        product_text = product_to_text(product)
-        chunks = chunkie(product_text)
-        result[product['id']] = chunks
+ #   for product in products_database:
+  #      product_text = product_to_text(product)
+   #     chunks = chunkie(product_text)
+    #    result[product['id']] = chunks
     
-    return result
+    #return result
 
-print(process_products(products_database))
+#print(process_products(products_database))
