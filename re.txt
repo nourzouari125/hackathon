@@ -1,0 +1,9 @@
+
+streamlit
+torch
+transformers
+pillow
+qdrant-client
+openai-whisper
+librosa
+numpy

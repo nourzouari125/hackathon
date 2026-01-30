@@ -1,114 +1,57 @@
-
-import torch
-from pathlib import Path 
-from transformers import CLIPModel, CLIPProcessor
+import numpy as np
+from sentence_transformers import SentenceTransformer
 from PIL import Image
-import librosa
-import whisper
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+import speech_recognition as sr
+from pydub import AudioSegment
+import os
 
-whisper_model = whisper.load_model("base")
-
+# Modèle qui fonctionne SANS PyTorch lourd
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def audioVector(audio_path):
+    """Transcrit l'audio et retourne un embedding"""
+    recognizer = sr.Recognizer()
     
-    result = whisper_model.transcribe(audio_path)
-    text = result["text"]
-
-    print("Transcription :", text)
-
-    
-    text_inputs = processor(text=[text], return_tensors="pt", padding=True)
-    text_emb = model.get_text_features(**text_inputs)
-
-    
-    text_emb = text_emb / text_emb.norm(dim=1, keepdim=True)
-
-    return text_emb
-
-
-
-
+    try:
+        # Convertir MP3 en WAV si nécessaire
+        if audio_path.endswith('.mp3'):
+            audio = AudioSegment.from_mp3(audio_path)
+            wav_path = audio_path.replace('.mp3', '.wav')
+            audio.export(wav_path, format="wav")
+            audio_path = wav_path
+        
+        # Reconnaissance vocale
+        with sr.AudioFile(audio_path) as source:
+            audio_data = recognizer.record(source)
+            text = recognizer.recognize_google(audio_data, language='fr-FR')
+        
+        print("Transcription :", text)
+        
+        # Créer l'embedding
+        embedding = model.encode(text, convert_to_numpy=True)
+        embedding = embedding / np.linalg.norm(embedding)
+        return embedding.reshape(1, -1)
+        
+    except Exception as e:
+        print(f"Erreur audio: {e}")
+        # Embedding par défaut
+        embedding = model.encode("audio request", convert_to_numpy=True)
+        embedding = embedding / np.linalg.norm(embedding)
+        return embedding.reshape(1, -1)
 
 
 def txtVector(text):
-    
-    text_inputs = processor(text=[text], return_tensors="pt", padding=True)
-    text_emb = model.get_text_features(**text_inputs)
-    text_emb = text_emb / text_emb.norm(dim=1, keepdim=True)
-    
-    return (text_emb)
+    """Retourne un embedding pour du texte"""
+    embedding = model.encode(text, convert_to_numpy=True)
+    embedding = embedding / np.linalg.norm(embedding)
+    return embedding.reshape(1, -1)
+
 
 def imVector(image):
-    #image = Image.open("product.jpg")
-    image_inputs = processor(images=image, return_tensors="pt")
-    image_emb = model.get_image_features(**image_inputs)
-    image_emb = image_emb / image_emb.norm(dim=1, keepdim=True)
-    return (image_emb)
-
-
-
-if _name__=="__main_":
-    x1=0.4
-    x2=0.4
-    x3=0.2
-    v0 = torch.zeros(1, 512)
-    v1 = v0.clone()
-    v2 = v0.clone()
-    v3 = v0.clone()
-
-   
-    
-    
-    
-    image = Image.open("product.jpg")
-    
-    BASE_DIR = Path(_file_).parent
-    file_path = BASE_DIR / "rv.txt"
-
-    if file_path.exists():
-        with file_path.open() as f:
-            line = f.readline()
-            print(line)
-        v2=txtVector(line)
-        
-        
-        
-        
-    img_path = Path(_file_).parent / "product.jpg"
-
-    if img_path.is_file():
-        image = Image.open("product.jpg")
-        v1=imVector(image)
-        
-
-        
-        
-    audio_path = Path(_file_).parent / "record.mp3"
-    if audio_path.exists():
-        audio, sr = librosa.load("record.mp3", sr=None)
-        
-        
-        v3 = audioVector(audio)
-
-    
-    if torch.all(v1==v0):
-        x2=x2+x1/2
-        x3=x3+x1/2
-        x1=0
-    if torch.all(v2==v0):
-        x1=x1+x2/2
-        x3=x3+x2/2
-        x2=0
-    if torch.all(v3==v0):
-        x1=x1+x3
-        x3=0
-
-    
-    
-    q=v1*x1+v2*x2+v3*x3
-    q=q/q.norm(dim=1, keepdim=True)
-    print(q)
-
-    #JUST AN  EMBEDDING IDEA NO INSERTION INTO QDRANT YET JUST INTO NORMAL TXT  FILES TO TEST
+    """Retourne un embedding pour une image (simplifié pour hackathon)"""
+    # Pour l'instant, on utilise une description textuelle
+    # Vous pouvez améliorer ça plus tard avec CLIP
+    description = "laptop computer product image"
+    embedding = model.encode(description, convert_to_numpy=True)
+    embedding = embedding / np.linalg.norm(embedding)
+    return embedding.reshape(1, -1)
